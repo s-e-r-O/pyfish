@@ -1,8 +1,6 @@
-import sys
 import math
 
 from constants import *
-from values import *
 
 lim = pow(2,32)
 P = list(PI_P_ARRAY)
@@ -10,16 +8,6 @@ S = list(map(list,PI_S_BOXES))
 
 def f(x):
     return ((((S[0][x >> 24] + S[1][x >> 16 & 0xff]) % lim) ^ S[2][x >> 8 & 0xff]) + S[3][x & 0xff]) % lim 
-
-def encrypt(xL, xR):
-    for i in range(0,16):
-        xL = xL ^ P[i]
-        xR = f(xL) ^ xR
-        (xL, xR) = (xR, xL)
-    (xL, xR) = (xR, xL)
-    xR = xR ^ P[16]
-    xL = xL ^ P[17]
-    return (xL,xR)
 
 def str2int(word):
     i = bytearray()
@@ -37,7 +25,7 @@ def divideByBlocks(word, length):
         blocks[numBlocks-1] = blocks[numBlocks-1] << ((length - (l % length))*8)
     return (blocks, numBlocks)
 
-def init(P, S, key):
+def init(key):
     (keyBlocks, keylen) = divideByBlocks(key, 4)
 
     for i in range (0, 18):
@@ -55,25 +43,23 @@ def init(P, S, key):
             (xL, xR) = (S[i][j],S[i][j+1])
     return (P,S)
 
-(P,S) = init(P, S, KEY)
+def encrypt(xL, xR):
+    for i in range(0,16):
+        xL = xL ^ P[i]
+        xR = f(xL) ^ xR
+        (xL, xR) = (xR, xL)
+    (xL, xR) = (xR, xL)
+    xR = xR ^ P[16]
+    xL = xL ^ P[17]
+    return (xL,xR)
 
-# Not so sure about this
-
-try:
-    message = sys.argv[1]
-except:
-    message = MESSAGE
-
-(msgBlocks, msglen) = divideByBlocks(message, 8)
-
-for i in range(0, msglen):
-    (xL, xR) = encrypt(msgBlocks[i]>>32 & 0xffffffff, msgBlocks[i] & 0xffffffff) 
-    msgBlocks[i] = (xL << 32) + xR
-    msgBlocks[i] = (msgBlocks[i]).to_bytes(length=8, byteorder='big', signed=False)
-
-encryptedMessage = b''.join(msgBlocks)
-print(hex(int.from_bytes(encryptedMessage, byteorder='big', signed=False)))
-
-binFile = open('secret.bin', 'wb')
-binFile.write(encryptedMessage)
-binFile.close()
+def decrypt(xL, xR):
+    for i in range(16, 0, -2):
+        xL ^= P[i+1]
+        xR ^= f(xL)
+        xR ^= P[i]
+        xL ^= f(xR)
+    xL ^= P[1]
+    xR ^= P[0]
+    (xL, xR) = (xR, xL)
+    return (xL, xR)
