@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 import sys
 import math
 
@@ -16,7 +18,8 @@ byteBlocks = binFile.read()
 binFile.close()
 msgBlocks = []
 
-for i in range(0, math.ceil(len(byteBlocks)/8)):
+for i in range(0, math.ceil(
+    len(byteBlocks)/8)):
     msgBlocks.append(int.from_bytes(byteBlocks[i*8:(i+1)*8], byteorder='big', signed=False))
 
 for i in range(0, len(msgBlocks)):
@@ -25,4 +28,10 @@ for i in range(0, len(msgBlocks)):
     msgBlocks[i] = (msgBlocks[i]).to_bytes(length=8, byteorder='big', signed=False)
 
 decryptedMessage = b''.join(msgBlocks)
-print(decryptedMessage.decode('utf-8'))
+try:
+    print(decryptedMessage.decode('utf-8'))
+except:
+    try:
+        print(decryptedMessage.decode('latin-1'))
+    except:
+        print('Weird characters found. :(')
