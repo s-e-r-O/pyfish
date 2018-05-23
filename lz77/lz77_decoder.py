@@ -5,7 +5,6 @@ def dataProcessor():
     byteBlocks = binFile.read()
     binFile.close()
     compressedData = []
-    print(byteBlocks)
     for i in range(0, math.ceil(len(byteBlocks)/3)):
         a = int.from_bytes(byteBlocks[(i*3):(i*3+1)], byteorder='big', signed=False)
         b = int.from_bytes(byteBlocks[(i*3+1):(i*3+2)], byteorder='big', signed=False)
@@ -18,7 +17,7 @@ def decoder(encodedArray):
     for i in range(0, len(encodedArray)):
         mesLen = len(message)
         for j in range(mesLen - encodedArray[i][0], mesLen - encodedArray[i][0] + encodedArray[i][1]):
-            message += message[j]
+            message += message[j:j+1]
         message += encodedArray[i][2]
     return message
 
