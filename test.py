@@ -42,6 +42,7 @@ def writeCSV(n_range, times, filename):
     
     with open(filename, 'w', newline='') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',')
+        spamwriter.writerow(['n','time')
         i = 0
         for n in n_range:
             spamwriter.writerow([n,times[i]])    
