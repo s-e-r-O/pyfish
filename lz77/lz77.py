@@ -24,7 +24,7 @@ while i < l :
         if (binMsg[j] == binMsg[i]):
             n = 1
             found = True
-            while ((i+n) < l-1 and binMsg[j + n] == binMsg[i + n]):
+            while ((i+n) < l-1 and n < 255 and binMsg[j + n] == binMsg[i + n]):
                 n += 1
             if (n > 3):
                 compressed += (i - j).to_bytes(length=1, byteorder='big', signed=False)
