@@ -5,10 +5,11 @@ def dataProcessor():
     byteBlocks = binFile.read()
     binFile.close()
     compressedData = []
-    for i in range(0, math.floor(len(byteBlocks)/3)):
-        a = int.from_bytes(byteBlocks[i*3], byteorder='big', signed=False)
-        b = int.from_bytes(byteBlocks[(i*3)+1], byteorder='big', signed=False)
-        c = byteBlocks[(i*3)+2]
+    print(byteBlocks)
+    for i in range(0, math.ceil(len(byteBlocks)/3)):
+        a = int.from_bytes(byteBlocks[(i*3):(i*3+1)], byteorder='big', signed=False)
+        b = int.from_bytes(byteBlocks[(i*3+1):(i*3+2)], byteorder='big', signed=False)
+        c = byteBlocks[(i*3+2):(i*3+3)]
         compressedData.append((a,b,c))
     return compressedData
 
@@ -22,10 +23,8 @@ def decoder(encodedArray):
     return message
 
 encodedArr = dataProcessor()
-#encodedArr = [(0,0,'a'),(0,0,'b'),(2,2,'c'),(0,3,'a'),(0,2,'a'),(2,3,'a')]
-#encodedArr = [(0,0,'t'),(0,0,'o'),(0,0,'b'),(0,0,'e'),(3,1,'r'),(0,0,'n'),(3,1,'t'),(9,4,'$')]
 decompressedMessage = decoder(encodedArr)
-print(decoder(encodedArr))
+
 binFile = open('decompressed_secret.bin', 'wb')
 binFile.write(decompressedMessage)
 binFile.close()
